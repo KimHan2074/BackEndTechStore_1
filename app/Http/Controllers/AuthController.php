@@ -63,7 +63,7 @@ class AuthController extends Controller
 
         $token = $this->service->handleGoogleLogin($googleUser);
         
-        return redirect('https://frontendreacttechstore-production.up.railway.app/callback?token=' . $token);
+        return redirect('https://front-end-tech-store-henna.vercel.app/callback?token=' . $token);
     }
 
     public function login(Request $request){
