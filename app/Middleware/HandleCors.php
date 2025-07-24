@@ -10,7 +10,7 @@ class HandleCors
     {
         if ($request->getMethod() === "OPTIONS") {
             return response('', 200)
-                ->header('Access-Control-Allow-Origin', 'https://frontendreacttechstore-production.up.railway.app/')
+                ->header('Access-Control-Allow-Origin', 'https://front-end-tech-store-henna.vercel.app')
                 ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
                 ->header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With')
                 ->header('Access-Control-Allow-Credentials', 'true');
@@ -19,7 +19,7 @@ class HandleCors
         $response = $next($request);
 
         return $response
-            ->header('Access-Control-Allow-Origin', 'https://frontendreacttechstore-production.up.railway.app/')
+            ->header('Access-Control-Allow-Origin', 'https://front-end-tech-store-henna.vercel.app')
             ->header('Access-Control-Allow-Credentials', 'true');
     }
 }
