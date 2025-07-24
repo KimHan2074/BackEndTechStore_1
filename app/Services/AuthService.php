@@ -50,19 +50,8 @@ class AuthService
 
         try {
             $mailer->send($user->email, 'Your OTP code', $body);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Đăng ký thành công! Vui lòng kiểm tra email để lấy OTP.'
-            ]);
         } catch(\Exception $e) {
             Log::error('Send mail failed: ' . $e->getMessage());
-
-            return response()->json([
-                'status' => false,
-                'message' => 'Đăng ký thất bại! Không thể gửi email OTP.',
-                'error' => $e->getMessage()
-            ], 500);
         }
         return $user;
     }
