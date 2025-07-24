@@ -19,6 +19,22 @@ class AuthController extends Controller
         $this->service = $service;
     }
   
+    // public function register(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'name' => 'required|string',
+    //         'email' => 'required|email',
+    //         'password' => 'required|string|min:6',
+    //     ]);
+
+    //     try {
+    //         $this->service->register($validated);
+    //         return response()->json(['message' => 'Signup successful. Check your email for OTP.'], 201);
+    //     } catch (ValidationException $e) {
+    //         return response()->json(['errors' => $e->errors()], 422);
+    //     }
+    // }
+
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -29,9 +45,15 @@ class AuthController extends Controller
 
         try {
             $this->service->register($validated);
-            return response()->json(['message' => 'Signup successful. Check your email for OTP.'], 201);
+            return response()->json([
+                'status' => true,
+                'message' => 'Signup successful. Check your email for OTP.'
+            ], 201);
         } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->errors()], 422);
+            return response()->json([
+                'status' => false,
+                'errors' => $e->errors()
+            ], 422);
         }
     }
   
