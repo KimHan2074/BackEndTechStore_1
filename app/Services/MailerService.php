@@ -88,7 +88,7 @@ class MailerService
         $this->mail->Host = config('mail.mailers.smtp.host');
         $this->mail->SMTPAuth = true;
         $this->mail->Username = ('mail.mailers.smtp.username');
-        $this->mail->Password = config('mail.password');
+        $this->mail->Password = config('mail.mailers.smtp.password');
         $this->mail->SMTPSecure = config('mail.mailers.smtp.encryption');
         $this->mail->Port = config('mail.mailers.smtp.port');
 
@@ -100,6 +100,7 @@ class MailerService
                 'username' => config('mail.mailers.smtp.username'),
                 'from'     => $fromAddress,
                 'port'     => config('mail.mailers.smtp.port'),
+                'password'     => config('mail.mailers.smtp.password'),
         ]);
 
         if (empty($fromAddress)) {
