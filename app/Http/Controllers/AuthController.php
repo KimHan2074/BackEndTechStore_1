@@ -29,7 +29,7 @@ class AuthController extends Controller
 
         try {
             $this->service->register($validated);
-            return response()->json(['message' => 'Signup successful. Check your email for OTP.'], 201);
+            // return response()->json(['message' => 'Signup successful. Check your email for OTP.'], 201);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         }
