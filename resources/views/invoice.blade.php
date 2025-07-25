@@ -160,11 +160,18 @@
         <p class="date"><strong>Date {{ \Carbon\Carbon::now()->format('d') }} {{ \Carbon\Carbon::now()->format('F') }} {{ \Carbon\Carbon::now()->format('Y') }}</strong></p>
         <p><strong>Prepared by</strong></p>
         <div class="signature-section-img">
-          <div class="signature-img-stamp">
-              <img src="{{ public_path('storage/images/TechStore_stamp.png') }}" alt="Stamp" class="stamp-img">
-          </div>
+            <!-- <div class="signature-img-stamp">
+                <img src="{{ public_path('storage/images/TechStore_stamp.png') }}" alt="Stamp" class="stamp-img">
+            </div>
             <div class="signature-img-signature">
                 <img src="{{ public_path('storage/images/TechStore_signature.png') }}" alt="Signature" class="signature-img">
+            </div> -->
+
+            <div class="signature-img-stamp">
+                <img src="{{ public_path('images/TechStore_stamp.png') }}" alt="Stamp" class="stamp-img">
+            </div>
+            <div class="signature-img-signature">
+                <img src="{{ public_path('images/TechStore_signature.png') }}" alt="Signature" class="signature-img">
             </div>
         </div>
     </div>
