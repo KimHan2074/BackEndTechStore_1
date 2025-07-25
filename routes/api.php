@@ -132,8 +132,6 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/product/{productId}/detail', [ProductController::class, 'getProductDetail']);
-    Route::get('/product/{productId}/related', [ProductController::class, 'getRelatedProducts']);
     Route::post('/product/add-to-cart', [ProductController::class, 'add_to_cart']);
     Route::post('/product/add-to-wishlist', [ProductController::class, 'add_to_wishlist']);
     Route::post('/product/remove-from-wishlist', [ProductController::class, 'removeFromWishlist']);
@@ -162,6 +160,8 @@ Route::prefix('user')->group(function () {
     Route::get('/product/index', [ProductController::class, 'index']);
     Route::get('/product/promoted', [ProductController::class, 'getPromotedProducts']);
     Route::get('/product/categories', [ProductController::class, 'getProductCategories']);
+    Route::get('/product/{productId}/detail', [ProductController::class, 'getProductDetail']);
+    Route::get('/product/{productId}/related', [ProductController::class, 'getRelatedProducts']);
 
 
 
@@ -187,6 +187,7 @@ Route::prefix('user')->group(function () {
     Route::post('/create-payment', [VnpayController::class, 'createPayment']);
     Route::get('/vnpay-return', [VnpayController::class, 'vnpayReturn']);
 });
+
 
 
 
