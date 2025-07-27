@@ -136,9 +136,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/product/add-to-wishlist', [ProductController::class, 'add_to_wishlist']);
     Route::post('/product/remove-from-wishlist', [ProductController::class, 'removeFromWishlist']);
     Route::post('/product/buy-now', [ProductController::class, 'buyNow']);
-    Route::get('/reviews/product/{productId}', [ReviewController::class, 'getReviewsByProduct']);
-    Route::get('/specification/product/{productId}', [ProductSpecificationController::class, 'getByProductId']);
-    Route::get('/description/product/{productId}', [ProductDescriptionController::class, 'getByProductId']);
     Route::post('/product/{productId}/review', [ReviewController::class, 'storeReview']);
 });
 
@@ -162,7 +159,9 @@ Route::prefix('user')->group(function () {
     Route::get('/product/categories', [ProductController::class, 'getProductCategories']);
     Route::get('/product/{productId}/detail', [ProductController::class, 'getProductDetail']);
     Route::get('/product/{productId}/related', [ProductController::class, 'getRelatedProducts']);
-
+    Route::get('/reviews/product/{productId}', [ReviewController::class, 'getReviewsByProduct']);
+    Route::get('/specification/product/{productId}', [ProductSpecificationController::class, 'getByProductId']);
+    Route::get('/description/product/{productId}', [ProductDescriptionController::class, 'getByProductId']);
 
 
     Route::get('/wishlist/{id}', [ProductFavoriteController::class, 'getUserFavorites']);
