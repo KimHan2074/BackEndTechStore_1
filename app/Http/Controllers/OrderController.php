@@ -74,6 +74,7 @@ class OrderController extends Controller
         $this->orderService->confirmOrderAndSendMail($user->id);
         return response()->json(['message' => 'Order confirmed and email sent successfully.']);
     }
+    
     public function create(Request $request)
     {
         $request->validate([
