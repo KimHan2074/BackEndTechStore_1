@@ -66,7 +66,7 @@ Route::prefix('products')->group(function () {
     Route::get('/top-images', [CategoryController::class, 'GetImage']);
     Route::get('/search', [ProductController::class, 'getProductByKeyWord']);
     Route::get('/all-categories', [CategoryController::class, 'index']);
-
+    Route::get('/product/{id}/productcolors', [ProductColorController::class, 'getColorsByProduct']);
 
 });
 // ==============================
