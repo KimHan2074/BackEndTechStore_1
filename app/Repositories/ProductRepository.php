@@ -114,7 +114,7 @@ class ProductRepository
             ->first();
     }
 
-    public function create_Order($data)
+    public function createOrderFromCart($data)
     {
         return Order::create($data);
     }
