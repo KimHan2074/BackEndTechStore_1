@@ -23,7 +23,7 @@ class OrderService
             'user_id' => $userId,
             'order_date' => now(),
             'status' => 'pending',
-            'shipping_option' => $data['shipping_option'] ?? 'default',
+            'shipping_option' => $data['shipping_option'] ?? 'free',
             'total_amount' => $data['total_amount']
         ]);
     }
