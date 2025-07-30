@@ -93,6 +93,13 @@ class PaymentService
 
     public function confirmPayment($data)
     {
+        // 1. Kiểm tra đơn hàng đã thanh toán chưa
+        $existingPayment = Payment::where('order_id', $data['order_id'])->first();
+        if ($existingPayment) {
+            return $existingPayment; // Nếu đã thanh toán thì trả về luôn, không tạo lại
+        }
+
+        // 2. Tạo payment mới
         $payment = $this->paymentRepo->create([
             'order_id' => $data['order_id'],
             'method' => $data['method'],
@@ -100,8 +107,27 @@ class PaymentService
             'payment_date' => Carbon::now(),
         ]);
 
-        // ✅ Ghi các item vào DB
+        // 3. Chỉ tạo OrderDetail nếu chưa có
         foreach ($data['items'] as $item) {
+        $existingOrderDetail = OrderDetail::where('order_id', $data['order_id'])
+            ->where('product_id', $item['product_id'])
+            ->first();
+
+        if ($existingOrderDetail) {
+            // Nếu màu đã thay đổi hoặc số lượng hoặc giá thay đổi → cập nhật lại
+            if (
+                $existingOrderDetail->color !== ($item['color'] ?? 'black') ||
+                $existingOrderDetail->quantity !== $item['quantity'] ||
+                $existingOrderDetail->unit_price != $item['unit_price']
+            ) {
+                $existingOrderDetail->update([
+                    'color' => $item['color'] ?? 'black',
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                ]);
+            }
+        } else {
+            // Nếu chưa có thì tạo mới
             OrderDetail::create([
                 'order_id' => $data['order_id'],
                 'product_id' => $item['product_id'],
@@ -110,8 +136,9 @@ class PaymentService
                 'color' => $item['color'] ?? 'black',
             ]);
         }
+    }
+
 
         return $payment;
     }
-
 }
