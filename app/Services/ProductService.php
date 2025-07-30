@@ -90,7 +90,7 @@ class ProductService
         DB::beginTransaction();
 
         try {
-            $order = $this->productRepository->create_Order([
+            $order = $this->productRepository->createOrderFromCart([
                 'user_id' => $userId,
                 'order_date' => now(),
                 'status' => 'pending',
