@@ -119,8 +119,8 @@ Route::middleware('auth:sanctum')->prefix('user')->group(function () {
     Route::post('/order/confirm-payment', [OrderController::class, 'confirmPayment']);
     Route::get('/order-history', [OrderController::class, 'getOrderHistoryByDate']);
 
-     Route::put('/orders/{orderId}/update-info', [OrderController::class, 'updateOrderInfo']);
-    // Route::post('/orders/create', [OrderController::class, 'createOrder']);
+    Route::put('/orders/{orderId}/update-info', [OrderController::class, 'updateOrderInfo']);
+    Route::post('/orders/create', [OrderController::class, 'createOrder']);
     Route::delete('/order-history/delete', [OrderController::class, 'deleteHistory']);
 });
 
@@ -169,7 +169,6 @@ Route::prefix('user')->group(function () {
     Route::delete('/delete/wishlist/{id}', [ProductFavoriteController::class, 'destroy']);
     Route::post('/wishlist/add', [ProductFavoriteController::class, 'add']);
     // Order
-    Route::post('/orders/create', [OrderController::class, 'createOrder']);
     Route::put('/orders/{orderId}/update-info', [OrderController::class, 'updateOrderInfo']);
     Route::delete('/order-history/delete', [OrderController::class, 'deleteHistory']);
     // VnPay
@@ -178,7 +177,6 @@ Route::prefix('user')->group(function () {
     Route::post('/momo/create-payment', [MoMoController::class, 'momoPayment']);
     Route::post('/payments', [PaymentController::class, 'store']);
     Route::post('/orders/confirm-payment', [PaymentController::class, 'confirm']);
-    // Route::post('/orders/create', [OrderController::class, 'create']);
     Route::get('/orders/{order}', [OrderController::class, 'show']);
 
 
