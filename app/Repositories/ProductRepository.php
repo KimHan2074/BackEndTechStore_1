@@ -19,7 +19,7 @@ class ProductRepository
         $hotProducts = $this->getProductsByType('hot', 3);
         $newProducts = $this->getProductsByType('new', 3);
         $summerSaleProducts = $this->getProductsByType('summer sale', 3);
-        $bestDealProducts = $this->getProductsByType('best deal', 3);
+        $bestDealProducts = $this->getProductsByType('best deal', 4);
         $featureProducts = $this->getFeaturedProducts(['featured product'], 10);
 
 
