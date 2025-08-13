@@ -50,7 +50,7 @@ class MoMoController extends Controller
         $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
 
         $orderInfo = "Pay for the order #$orderId";
-        $redirectUrl = "http://localhost:3000/user/payment_confirmation";
+        $redirectUrl = "https://front-end-tech-store-henna.vercel.app/user/payment_confirmation";
         $ipnUrl = "http://localhost:8000/api/momo/ipn";
         $extraData = "";
         $requestId = time() . "";

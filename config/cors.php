@@ -19,7 +19,8 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'http://localhost:3000', // Giữ lại cho quá trình phát triển cục bộ
+        // 'http://localhost:3000', 
+        'http://localhost:3001',
         'https://front-end-tech-store-henna.vercel.app', // <--- THAY THẾ BẰNG URL THỰC TẾ CỦA FRONTEND CỦA BẠN TRÊN RAILWAY
     ],
 
