@@ -12,7 +12,7 @@ class VnpayController extends Controller
             $vnp_TmnCode = "EAH6WTTQ";
             $vnp_HashSecret = "KUR2TCT3VWLBNUKPPRGYC2UW91M2FJJK";
             $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-            $vnp_Returnurl = "http://localhost:3000/user/payment_confirmation";
+            $vnp_Returnurl = "https://front-end-tech-store-henna.vercel.app/user/payment_confirmation";
 
             $orderId = $request->input('order_id');
             $amount = $request->input('amount');
