@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminReviewController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\ProductCategoryController;
+use App\Http\Controllers\Admin\AdminBlogController;
 
 
 /*
@@ -54,6 +55,11 @@ Route::prefix('admin')->group(function () {
     Route::get('edit/products/{id}', [ProductCategoryController::class, 'show']);
     Route::post('create/products', [ProductCategoryController::class, 'store']);
     Route::get('/promotion-types', [ProductController::class, 'getPromotionTypes']);
+    Route::get('/blogs', [AdminBlogController::class, 'index']);
+    Route::post('/blogs', [AdminBlogController::class, 'store']);
+    Route::get('/blogs/{id}', [AdminBlogController::class, 'show']);
+    Route::put('/blogs/{id}', [AdminBlogController::class, 'update']);
+    Route::delete('/blogs/{id}', [AdminBlogController::class, 'destroy']);
 
 });
 
