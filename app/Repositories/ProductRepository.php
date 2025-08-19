@@ -159,12 +159,12 @@ class ProductRepository
         ]);
     }
 
-    public function deleteCartItems($userId, array $cartItemIds)
-    {
-        return ProductCart::where('user_id', $userId)
-            ->whereIn('id', $cartItemIds)
-            ->delete();
-    }
+    // public function deleteCartItems($userId, array $cartItemIds)
+    // {
+    //     return ProductCart::where('user_id', $userId)
+    //         ->whereIn('id', $cartItemIds)
+    //         ->delete();
+    // }
 
     public function getAllProductsWithImages()
     {
