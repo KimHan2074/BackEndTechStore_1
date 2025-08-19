@@ -21,4 +21,28 @@ class BlogService {
     {
         return $this->blogRepository->findById($id);
     }
+     public function getAll()
+    {
+        return $this->blogRepository->getAll();
+    }
+
+    public function getById($id)
+    {
+        return $this->blogRepository->findById($id);
+    }
+
+    public function create(array $data)
+    {
+        return $this->blogRepository->create($data);
+    }
+
+    public function update($id, array $data)
+    {
+        return $this->blogRepository->update($id, $data);
+    }
+
+    public function delete($id)
+    {
+        return $this->blogRepository->delete($id);
+    }
 }
