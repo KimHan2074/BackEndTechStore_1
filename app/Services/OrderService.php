@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Repositories\OrderRepository;
+use App\Repositories\ProductRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -11,10 +12,12 @@ use Illuminate\Support\Str;
 class OrderService
 {
     protected $orderRepository;
+    protected $productRepository;
 
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(OrderRepository $orderRepository, ProductRepository $productRepository)
     {
         $this->orderRepository = $orderRepository;
+        $this->productRepository = $productRepository;
     }
 
     public function createOrder($userId, $data)
