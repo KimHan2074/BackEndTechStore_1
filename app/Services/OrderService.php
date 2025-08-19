@@ -117,6 +117,12 @@ class OrderService
                 $productId = $item['product_id'];
                 $quantity = $item['quantity'];
 
+                 // Log kiểm tra giá trị
+                Log::info('Decrementing stock', [
+                    'product_id' => $productId,
+                    'quantity' => $quantity
+                ]);
+
                 $this->productRepository->decrementStock($productId, $quantity);
             }
 
