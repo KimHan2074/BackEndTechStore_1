@@ -95,15 +95,37 @@ class OrderService
         ';
 
         // Gửi mail dùng MailerService
+        // try {
+        //     $mailer = app(\App\Services\MailerService::class);
+        //     $mailer->send($email, 'Order Confirmation - ' . $orderCode, $body, $pdfPath);
+        // } catch (\Exception $e) {
+        //     Log::error('Send mail failed: ' . $e->getMessage());
+        // }
+
+        // // Xoá file PDF sau khi gửi
+        // unlink($pdfPath);
+
         try {
             $mailer = app(\App\Services\MailerService::class);
             $mailer->send($email, 'Order Confirmation - ' . $orderCode, $body, $pdfPath);
-        } catch (\Exception $e) {
-            Log::error('Send mail failed: ' . $e->getMessage());
-        }
 
-        // Xoá file PDF sau khi gửi
-        unlink($pdfPath);
+            // --- GIẢM SỐ LƯỢNG SẢN PHẨM SAU KHI GỬI MAIL ---
+            foreach ($orderData['items'] as $item) {
+                $productId = $item['product_id'];
+                $quantity = $item['quantity'];
+
+                $this->productRepository->decrementStock($productId, $quantity);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Send mail or decrement stock failed: ' . $e->getMessage());
+            // Có thể thêm rollback hoặc thông báo lỗi nếu cần
+        } finally {
+            // Xoá file PDF sau khi gửi
+            if (file_exists($pdfPath)) {
+                unlink($pdfPath);
+            }
+        }
     }
     public function getOrderHistoryByDate($userId, $date)
     {
