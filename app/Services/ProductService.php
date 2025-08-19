@@ -127,10 +127,10 @@ class ProductService
                 $cartItemIdsToDelete[] = $item['cart_item_id'];
             }
 
-            // Xoá các sản phẩm đã thanh toán khỏi bảng product_cart
-            if (!empty($cartItemIdsToDelete)) {
-                $this->productRepository->deleteCartItems($userId, $cartItemIdsToDelete);
-            }
+            // // Xoá các sản phẩm đã thanh toán khỏi bảng product_cart
+            // if (!empty($cartItemIdsToDelete)) {
+            //     $this->productRepository->deleteCartItems($userId, $cartItemIdsToDelete);
+            // }
 
             DB::commit();
             return response()->json([
