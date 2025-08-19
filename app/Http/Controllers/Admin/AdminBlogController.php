@@ -32,7 +32,7 @@ class AdminBlogController extends Controller
             'content' => 'required|string',
             'image_url' => 'nullable|string',
             'link_url' => 'nullable|string',
-            'status' => 'required|in:draft,published',
+            'status' => 'required|in:active,lastest new',
             'author_id' => 'required|integer',
             'publish_date' => 'nullable|date',
         ]);
