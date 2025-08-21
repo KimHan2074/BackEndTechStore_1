@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+
 class MoMoController extends Controller
 {
     private function execPostRequest($url, $data)
@@ -29,6 +30,7 @@ class MoMoController extends Controller
         return $result;
     }
 
+    // Tạo link thanh toán
     public function momoPayment(Request $request)
     {
         Log::info('🎯 Data received from React:', $request->all());
@@ -51,7 +53,7 @@ class MoMoController extends Controller
 
         $orderInfo = "Pay for the order #$orderId";
         $redirectUrl = "https://front-end-tech-store-henna.vercel.app/user/payment_confirmation";
-        $ipnUrl = "http://localhost:8000/api/momo/ipn";
+        $ipnUrl = "http://localhost:8000/api/momo/ipn"; // ⚡ nhớ đổi sang domain thật khi deploy
         $extraData = "";
         $requestId = time() . "";
         $requestType = "payWithATM";
@@ -91,5 +93,48 @@ class MoMoController extends Controller
             'payUrl' => $jsonResult['payUrl'],
             'message' => 'Successfully generated MoMo payment link.'
         ]);
+    }
+
+    // ✅ Hàm nhận IPN từ MoMo
+    public function momoIpn(Request $request)
+    {
+        Log::info('📩 MoMo IPN callback received:', $request->all());
+
+        $accessKey = 'klm05TvNBzhg7h7j';
+        $secretKey = 'at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa';
+        $params = $request->all();
+
+        // Build raw hash
+        $rawHash = "accessKey=" . $accessKey .
+            "&amount=" . $params['amount'] .
+            "&extraData=" . $params['extraData'] .
+            "&message=" . $params['message'] .
+            "&orderId=" . $params['orderId'] .
+            "&orderInfo=" . $params['orderInfo'] .
+            "&orderType=" . $params['orderType'] .
+            "&partnerCode=" . $params['partnerCode'] .
+            "&payType=" . $params['payType'] .
+            "&requestId=" . $params['requestId'] .
+            "&responseTime=" . $params['responseTime'] .
+            "&resultCode=" . $params['resultCode'] .
+            "&transId=" . $params['transId'];
+
+        $signature = hash_hmac("sha256", $rawHash, $secretKey);
+
+        // Kiểm tra chữ ký
+        if ($signature !== $params['signature']) {
+            Log::error("❌ Invalid signature from MoMo");
+            return response()->json(['message' => 'Invalid signature'], 400);
+        }
+
+        // Kiểm tra trạng thái giao dịch
+        if ($params['resultCode'] == 0) {
+            Log::info("✅ Order {$params['orderId']} thanh toán thành công!");
+        } else {
+            Log::warning("⚠️ Order {$params['orderId']} thất bại với mã {$params['resultCode']}");
+        }
+
+        // Trả về cho MoMo (bắt buộc 200)
+        return response()->json(['message' => 'IPN received'], 200);
     }
 }
