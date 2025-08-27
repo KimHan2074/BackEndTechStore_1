@@ -93,23 +93,26 @@ class PaymentService
 
     public function confirmPayment($data)
     {
+        // get order id 
+        $orderIdFull = $data['orderId'];
+        $system_order_id = explode('_', $orderIdFull)[1] ?? 0; // Giả sử định dạng là MOMO_{order_id}_{timestamp}
         // 1. Kiểm tra đơn hàng đã thanh toán chưa
-        $existingPayment = Payment::where('order_id', $data['order_id'])->first();
+        $existingPayment = Payment::where('order_id', $system_order_id)->first();
         if ($existingPayment) {
             return $existingPayment; // Nếu đã thanh toán thì trả về luôn, không tạo lại
         }
 
-        // 2. Tạo payment mới
+        // 2. Tạo payment mới 
         $payment = $this->paymentRepo->create([
-            'order_id' => $data['order_id'],
-            'method' => $data['method'],
+            'order_id' => $system_order_id,
+            'method' => "method", // xem lại bên data trả về có biên methosd ko?
             'status' => 'Completed',
             'payment_date' => Carbon::now(),
         ]);
 
         // 3. Chỉ tạo OrderDetail nếu chưa có
         foreach ($data['items'] as $item) {
-        $existingOrderDetail = OrderDetail::where('order_id', $data['order_id'])
+        $existingOrderDetail = OrderDetail::where('order_id', $system_order_id)
             ->where('product_id', $item['product_id'])
             ->first();
 
@@ -129,7 +132,7 @@ class PaymentService
         } else {
             // Nếu chưa có thì tạo mới
             OrderDetail::create([
-                'order_id' => $data['order_id'],
+                'order_id' => $system_order_id,
                 'product_id' => $item['product_id'],
                 'quantity' => $item['quantity'],
                 'unit_price' => $item['unit_price'],
