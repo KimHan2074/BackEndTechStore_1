@@ -154,18 +154,69 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use App\Mail\SendOtpMail;
-use App\Mail\SignUpSuccessMail;
+// use App\Mail\SendOtpMail;
+// use App\Mail\SignUpSuccessMail;
 
 class AuthService
 {
     protected $repository;
+    protected $brevo;
 
-    public function __construct(AuthRepository $repository)
+    public function __construct(AuthRepository $repository, BrevoService $brevo)
     {
         $this->repository = $repository;
+        $this->brevo = $brevo;
     }
   
+    // public function register($data)
+    // {
+    //     $existing = $this->repository->findByEmail($data['email']); 
+
+    //     if ($existing) {
+    //         throw ValidationException::withMessages([
+    //             'email' => ['Email already exists.'],
+    //         ]);
+    //     }
+        
+    //     $data['password'] = Hash::make($data['password']);
+    //     $data['email_otp'] = rand(100000, 999999);
+    //     $user = $this->repository->create($data); 
+
+    //     try {
+    //         Mail::to($user->email)->send(new SendOtpMail($data['email_otp']));
+    //     } catch(\Exception $e) {
+    //         \Log::error('Send mail failed: ' . $e->getMessage());
+    //     }
+
+    //     return $user;
+    // }
+  
+    // public function verifyOtp($email, $email_otp)
+    // {
+    //     $user = $this->repository->findByEmail($email);
+
+    //     if ($user && $user->email_otp == $email_otp) {
+    //         $user->email_verified = true;
+    //         $user->email_otp = null;
+
+    //         if ($user->email_verified && str_ends_with($user->email, '@ITDragonsTeam.com')) {
+    //             $user->role = 'admin';
+    //         } else {
+    //             $user->role = 'user';
+    //         }
+    //         $user->save();
+
+    //         try {
+    //             Mail::to($user->email)->send(new SignUpSuccessMail($user));
+    //         } catch(\Exception $e) {
+    //             \Log::error('Send mail failed: ' . $e->getMessage()); 
+    //         }
+
+    //         return true;
+    //     }
+    //     return false;
+    // }
+
     public function register($data)
     {
         $existing = $this->repository->findByEmail($data['email']); 
@@ -175,20 +226,21 @@ class AuthService
                 'email' => ['Email already exists.'],
             ]);
         }
-        
+
         $data['password'] = Hash::make($data['password']);
         $data['email_otp'] = rand(100000, 999999);
         $user = $this->repository->create($data); 
 
         try {
-            Mail::to($user->email)->send(new SendOtpMail($data['email_otp']));
-        } catch(\Exception $e) {
+            $html = "<p>Your OTP is <b>{$data['email_otp']}</b></p>";
+            $this->brevo->sendEmail($user->email, 'Your OTP Code', $html);
+        } catch (\Exception $e) {
             \Log::error('Send mail failed: ' . $e->getMessage());
         }
 
         return $user;
     }
-  
+
     public function verifyOtp($email, $email_otp)
     {
         $user = $this->repository->findByEmail($email);
@@ -205,9 +257,13 @@ class AuthService
             $user->save();
 
             try {
-                Mail::to($user->email)->send(new SignUpSuccessMail($user));
-            } catch(\Exception $e) {
-                \Log::error('Send mail failed: ' . $e->getMessage()); 
+                $html = "
+                    <h3>Hello {$user->name},</h3>
+                    <p>Your account has been successfully registered.</p>
+                ";
+                $this->brevo->sendEmail($user->email, 'Sign-up Successful!', $html);
+            } catch (\Exception $e) {
+                \Log::error('Send mail failed: ' . $e->getMessage());
             }
 
             return true;
