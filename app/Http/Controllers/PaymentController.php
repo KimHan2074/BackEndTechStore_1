@@ -30,11 +30,11 @@ class PaymentController extends Controller
             'data' => $payment,
         ]);
     }
-     public function confirm(Request $request)
+    public function confirm(Request $request)
     {
         $validated = $request->validate([
             'order_id' => 'required|exists:orders,id',
-            'method' => 'required|in:COD,VNPay,Momo,PayPal,QR'
+            'payment_method' => 'required|in:momo,cash,vnpay,qr'
         ]);
 
         $result = $this->paymentService->confirmPayment($validated);
@@ -44,5 +44,5 @@ class PaymentController extends Controller
             'payment_id' => $result->id,
         ]);
     }
-} 
+}
 
