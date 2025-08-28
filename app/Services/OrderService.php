@@ -48,94 +48,95 @@ class OrderService
         return $this->orderRepository->getLatestOrderByUser($userId);
     }
 
-    public function confirmOrderAndSendMail($userId)
-    {
-        $orderData = $this->orderRepository->getLatestOrderByUser($userId);
+    // public function confirmOrderAndSendMail($userId)
+    // {
+    //     $orderData = $this->orderRepository->getLatestOrderByUser($userId);
 
-        $email = $orderData['customer']['email'];
-        $name = $orderData['customer']['fullname'];
-        $orderCode = $orderData['order_code'];
+    //     $email = $orderData['customer']['email'];
+    //     $name = $orderData['customer']['fullname'];
+    //     $orderCode = $orderData['order_code'];
 
-        // Tạo PDF từ view 'invoice'
-        $pdf = Pdf::loadView('invoice', [
-            'orderCode' => $orderCode,
-            'customer' => $orderData['customer'],
-            'items' => $orderData['items'],
-            'summary' => $orderData['summary']
-        ]);
+    //     // Tạo PDF từ view 'invoice'
+    //     $pdf = Pdf::loadView('invoice', [
+    //         'orderCode' => $orderCode,
+    //         'customer' => $orderData['customer'],
+    //         'items' => $orderData['items'],
+    //         'summary' => $orderData['summary']
+    //     ]);
 
-        $filename = 'Invoice_' . Str::slug($orderCode) . '.pdf';
-        $pdfPath = storage_path('app/public/' . $filename);
-        $pdf->save($pdfPath);
+    //     $filename = 'Invoice_' . Str::slug($orderCode) . '.pdf';
+    //     $pdfPath = storage_path('app/public/' . $filename);
+    //     $pdf->save($pdfPath);
 
-        // Tạo nội dung HTML email
-        $body = '
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>Order Confirmation</title>
-            </head>
-            <body>
-                <h3>Hello ' . $name . ',</h3>
+    //     // Tạo nội dung HTML email
+    //     $body = '
+    //         <!DOCTYPE html>
+    //         <html>
+    //         <head>
+    //             <meta charset="UTF-8">
+    //             <title>Order Confirmation</title>
+    //         </head>
+    //         <body>
+    //             <h3>Hello ' . $name . ',</h3>
 
-                <p>Thank you very much for your recent order with us!</p>
+    //             <p>Thank you very much for your recent order with us!</p>
 
-                <p>We’re excited to let you know that your order has been successfully processed.</p>
+    //             <p>We’re excited to let you know that your order has been successfully processed.</p>
 
-                <p><strong>Order Code:</strong> ' . $orderCode . '</p>
+    //             <p><strong>Order Code:</strong> ' . $orderCode . '</p>
 
-                <p>Please find your invoice attached to this email for your records. It includes the full details of your purchase.</p>
+    //             <p>Please find your invoice attached to this email for your records. It includes the full details of your purchase.</p>
 
-                <p>If you have any questions or concerns regarding your order, feel free to reach out to our support team at any time. We are always happy to help!</p>
+    //             <p>If you have any questions or concerns regarding your order, feel free to reach out to our support team at any time. We are always happy to help!</p>
 
-                <p>Once again, thank you for choosing our store. We truly appreciate your business and hope to serve you again in the future.</p>
+    //             <p>Once again, thank you for choosing our store. We truly appreciate your business and hope to serve you again in the future.</p>
 
-                <p>Best regards,<br>
-                The ITDragons Team</p>
-            </body>
-            </html>
-        ';
+    //             <p>Best regards,<br>
+    //             The ITDragons Team</p>
+    //         </body>
+    //         </html>
+    //     ';
 
-        // Gửi mail dùng MailerService
-        // try {
-        //     $mailer = app(\App\Services\MailerService::class);
-        //     $mailer->send($email, 'Order Confirmation - ' . $orderCode, $body, $pdfPath);
-        // } catch (\Exception $e) {
-        //     Log::error('Send mail failed: ' . $e->getMessage());
-        // }
+    //     // Gửi mail dùng MailerService
+    //     // try {
+    //     //     $mailer = app(\App\Services\MailerService::class);
+    //     //     $mailer->send($email, 'Order Confirmation - ' . $orderCode, $body, $pdfPath);
+    //     // } catch (\Exception $e) {
+    //     //     Log::error('Send mail failed: ' . $e->getMessage());
+    //     // }
 
-        // // Xoá file PDF sau khi gửi
-        // unlink($pdfPath);
+    //     // // Xoá file PDF sau khi gửi
+    //     // unlink($pdfPath);
 
-        try {
-            $mailer = app(\App\Services\MailerService::class);
-            $mailer->send($email, 'Order Confirmation - ' . $orderCode, $body, $pdfPath);
+    //     try {
+    //         $mailer = app(\App\Services\MailerService::class);
+    //         $mailer->send($email, 'Order Confirmation - ' . $orderCode, $body, $pdfPath);
 
-            // --- GIẢM SỐ LƯỢNG SẢN PHẨM SAU KHI GỬI MAIL ---
-            foreach ($orderData['items'] as $item) {
-                $productId = $item['product_id'];
-                $quantity = $item['quantity'];
+    //         // --- GIẢM SỐ LƯỢNG SẢN PHẨM SAU KHI GỬI MAIL ---
+    //         foreach ($orderData['items'] as $item) {
+    //             $productId = $item['product_id'];
+    //             $quantity = $item['quantity'];
 
-                 // Log kiểm tra giá trị
-                Log::info('Decrementing stock', [
-                    'product_id' => $productId,
-                    'quantity' => $quantity
-                ]);
+    //              // Log kiểm tra giá trị
+    //             Log::info('Decrementing stock', [
+    //                 'product_id' => $productId,
+    //                 'quantity' => $quantity
+    //             ]);
 
-                $this->productRepository->decrementStock($productId, $quantity);
-            }
+    //             $this->productRepository->decrementStock($productId, $quantity);
+    //         }
 
-        } catch (\Exception $e) {
-            Log::error('Send mail or decrement stock failed: ' . $e->getMessage());
-            // Có thể thêm rollback hoặc thông báo lỗi nếu cần
-        } finally {
-            // Xoá file PDF sau khi gửi
-            if (file_exists($pdfPath)) {
-                unlink($pdfPath);
-            }
-        }
-    }
+    //     } catch (\Exception $e) {
+    //         Log::error('Send mail or decrement stock failed: ' . $e->getMessage());
+    //         // Có thể thêm rollback hoặc thông báo lỗi nếu cần
+    //     } finally {
+    //         // Xoá file PDF sau khi gửi
+    //         if (file_exists($pdfPath)) {
+    //             unlink($pdfPath);
+    //         }
+    //     }
+    // }
+
     public function getOrderHistoryByDate($userId, $date)
     {
         return Order::with([
