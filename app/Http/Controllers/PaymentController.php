@@ -34,7 +34,7 @@ class PaymentController extends Controller
     {
         $validated = $request->validate([
             'order_id' => 'required|exists:orders,id',
-            'payment_method' => 'required|in:momo,cash,vnpay,qr'
+            'method' => 'required|in:COD,VNPay,Momo,PayPal,QR'
         ]);
 
         $result = $this->paymentService->confirmPayment($validated);
