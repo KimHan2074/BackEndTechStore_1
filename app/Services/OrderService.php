@@ -13,11 +13,13 @@ class OrderService
 {
     protected $orderRepository;
     protected $productRepository;
+    protected $brevo;
 
-    public function __construct(OrderRepository $orderRepository, ProductRepository $productRepository)
+    public function __construct(OrderRepository $orderRepository, ProductRepository $productRepository, BrevoService $brevo)
     {
         $this->orderRepository = $orderRepository;
         $this->productRepository = $productRepository;
+        $this->brevo = $brevo;
     }
 
     public function createOrder($userId, $data)
@@ -136,6 +138,63 @@ class OrderService
     //         }
     //     }
     // }
+
+    public function confirmOrderAndSendMail($userId)
+    {
+        $orderData = $this->orderRepository->getLatestOrderByUser($userId);
+
+        $email = $orderData['customer']['email'];
+        $name = $orderData['customer']['fullname'];
+        $orderCode = $orderData['order_code'];
+
+        // Tạo PDF từ view 'invoice'
+        $pdf = Pdf::loadView('invoice', [
+            'orderCode' => $orderCode,
+            'customer' => $orderData['customer'],
+            'items' => $orderData['items'],
+            'summary' => $orderData['summary']
+        ]);
+
+        $filename = 'Invoice_' . \Str::slug($orderCode) . '.pdf';
+        $pdfPath = storage_path('app/public/' . $filename);
+        $pdf->save($pdfPath);
+
+        // Nội dung HTML email
+        $body = "
+            <h3>Hello {$name},</h3>
+            <p>Thank you very much for your recent order with us!</p>
+            <p>We’re excited to let you know that your order has been successfully processed.</p>
+            <p><strong>Order Code:</strong> {$orderCode}</p>
+            <p>Please find your invoice attached to this email for your records.</p>
+            <p>If you have any questions or concerns regarding your order, feel free to reach out to our support team.</p>
+            <p>Best regards,<br>The ITDragons Team</p>
+        ";
+
+        try {
+            // $brevo = app(\App\Services\BrevoService::class);
+            $this->brevo->sendEmail($email, 'Order Confirmation - ' . $orderCode, $body, $pdfPath);
+
+            // --- GIẢM SỐ LƯỢNG SẢN PHẨM ---
+            foreach ($orderData['items'] as $item) {
+                $productId = $item['product_id'];
+                $quantity = $item['quantity'];
+
+                \Log::info('Decrementing stock', [
+                    'product_id' => $productId,
+                    'quantity' => $quantity
+                ]);
+
+                $this->productRepository->decrementStock($productId, $quantity);
+            }
+
+        } catch (\Exception $e) {
+            \Log::error('Send mail or decrement stock failed: ' . $e->getMessage());
+        } finally {
+            if (file_exists($pdfPath)) {
+                unlink($pdfPath); // cleanup file
+            }
+        }
+    }
 
     public function getOrderHistoryByDate($userId, $date)
     {
