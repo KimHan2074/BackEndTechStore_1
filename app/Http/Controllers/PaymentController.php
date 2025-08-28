@@ -30,7 +30,7 @@ class PaymentController extends Controller
             'data' => $payment,
         ]);
     }
-     public function confirm(Request $request)
+    public function confirm(Request $request)
     {
         $validated = $request->validate([
             'order_id' => 'required|exists:orders,id',
@@ -44,5 +44,5 @@ class PaymentController extends Controller
             'payment_id' => $result->id,
         ]);
     }
-} 
+}
 
