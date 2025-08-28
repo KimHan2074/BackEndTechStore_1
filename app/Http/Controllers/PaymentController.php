@@ -52,7 +52,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\PaymentService;
-
+use PaymentService as GlobalPaymentService;
 
 class PaymentController extends Controller
 {
