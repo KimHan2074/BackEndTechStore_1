@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class MoMoController extends Controller
-{
+ {protected $paymentService;
+
+    public function __construct(PaymentService $paymentService)
+    {
+        $this->paymentService = $paymentService;
+    }
     private function execPostRequest($url, $data)
     {
         $ch = curl_init($url);
@@ -134,6 +140,41 @@ class MoMoController extends Controller
         }
 
         return response()->json(['message' => 'IPN received'], 200);
+    }
+
+    public function handleReturn(Request $request)
+    {
+        Log::info('MoMo Return Params:', $request->all());
+
+        $orderId = $request->input('orderId');
+        $resultCode = $request->input('resultCode'); // 0 = success
+        $amount = $request->input('amount');
+
+        if (!$orderId || $resultCode === null) {
+            return response()->json([
+                'status' => 'fail',
+                'message' => 'Missing parameters'
+            ]);
+        }
+
+        // Kiểm tra thành công từ MoMo
+        if ($resultCode == 0) {
+            // Cập nhật trạng thái đơn hàng trong DB
+            $this->paymentService->confirmPayment([
+                'order_id' => $orderId,
+                'method' => 'Momo'
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'orderId' => $orderId
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'fail',
+                'orderId' => $orderId
+            ]);
+        }
     }
 }
 
