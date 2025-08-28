@@ -123,7 +123,7 @@ class ProductService
                 }
 
                 $this->productRepository->createOrderDetail($order->id, $item);
-                $this->productRepository->decrementStock($item['product_id'], $item['quantity']);
+                // $this->productRepository->decrementStock($item['product_id'], $item['quantity']);
                 $cartItemIdsToDelete[] = $item['cart_item_id'];
             }
 

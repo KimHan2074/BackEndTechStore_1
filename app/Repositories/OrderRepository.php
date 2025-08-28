@@ -190,6 +190,7 @@ class OrderRepository
             ],
             'items' => $details->map(function ($item) {
                 return [
+                    'product_id' => $item->product->id,
                     'product_name' => $item->product->name,
                     'quantity' => $item->quantity,
                     'unit_price' => $item->unit_price,

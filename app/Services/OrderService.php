@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Repositories\OrderRepository;
+use App\Repositories\ProductRepository;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -11,10 +12,12 @@ use Illuminate\Support\Str;
 class OrderService
 {
     protected $orderRepository;
+    protected $productRepository;
 
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(OrderRepository $orderRepository, ProductRepository $productRepository)
     {
         $this->orderRepository = $orderRepository;
+        $this->productRepository = $productRepository;
     }
 
     public function createOrder($userId, $data)
@@ -95,15 +98,43 @@ class OrderService
         ';
 
         // Gửi mail dùng MailerService
+        // try {
+        //     $mailer = app(\App\Services\MailerService::class);
+        //     $mailer->send($email, 'Order Confirmation - ' . $orderCode, $body, $pdfPath);
+        // } catch (\Exception $e) {
+        //     Log::error('Send mail failed: ' . $e->getMessage());
+        // }
+
+        // // Xoá file PDF sau khi gửi
+        // unlink($pdfPath);
+
         try {
             $mailer = app(\App\Services\MailerService::class);
             $mailer->send($email, 'Order Confirmation - ' . $orderCode, $body, $pdfPath);
-        } catch (\Exception $e) {
-            Log::error('Send mail failed: ' . $e->getMessage());
-        }
 
-        // Xoá file PDF sau khi gửi
-        unlink($pdfPath);
+            // --- GIẢM SỐ LƯỢNG SẢN PHẨM SAU KHI GỬI MAIL ---
+            foreach ($orderData['items'] as $item) {
+                $productId = $item['product_id'];
+                $quantity = $item['quantity'];
+
+                 // Log kiểm tra giá trị
+                Log::info('Decrementing stock', [
+                    'product_id' => $productId,
+                    'quantity' => $quantity
+                ]);
+
+                $this->productRepository->decrementStock($productId, $quantity);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Send mail or decrement stock failed: ' . $e->getMessage());
+            // Có thể thêm rollback hoặc thông báo lỗi nếu cần
+        } finally {
+            // Xoá file PDF sau khi gửi
+            if (file_exists($pdfPath)) {
+                unlink($pdfPath);
+            }
+        }
     }
     public function getOrderHistoryByDate($userId, $date)
     {
