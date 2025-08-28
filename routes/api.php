@@ -190,6 +190,13 @@ Route::prefix('user')->group(function () {
     Route::get('/vnpay-return', [VnpayController::class, 'handleReturn'])->name('vnpay.return');
     Route::post('/create-payment', [VnpayController::class, 'createPayment']);
     Route::get('/vnpay-return', [VnpayController::class, 'vnpayReturn']);
+
+
+
+    // Chỉnh sửa và thêm test
+    Route::post('/momo/payment', [MoMoController::class, 'momoPayment']);
+Route::get('/momo/return', [MoMoController::class, 'momoReturn']); 
+Route::post('/momo/ipn', [MoMoController::class, 'momoIpn']);
 });
 
 
