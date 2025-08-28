@@ -185,6 +185,10 @@ Route::prefix('user')->group(function () {
     Route::post('/orders/confirm-payment', [PaymentController::class, 'confirm']);
     Route::get('/orders/{order}', [OrderController::class, 'show']);
 
+    // Add more to test
+    Route::post('/momo/verify', [MomoController::class, 'handleReturn']);
+
+
 
     Route::get('/vnpay-payment', [VnpayController::class, 'createPayment'])->name('vnpay.payment');
     Route::get('/vnpay-return', [VnpayController::class, 'handleReturn'])->name('vnpay.return');
