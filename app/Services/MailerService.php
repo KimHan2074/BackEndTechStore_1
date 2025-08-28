@@ -23,6 +23,11 @@ class MailerService
         $this->mail->SMTPSecure = config('mail.mailers.smtp.encryption');
         $this->mail->Port = config('mail.mailers.smtp.port');
 
+        $this->mail->SMTPDebug = 2; 
+        $this->mail->Debugoutput = function($str, $level) {
+            Log::info('[SMTP DEBUG]['.$level.'] ' . $str);
+        };
+
         $fromAddress = config('mail.from.address');
         $fromName = config('mail.from.name', 'No-Reply');
 
